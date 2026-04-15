@@ -7,18 +7,18 @@ from Monitor.options import *
 app = Flask(__name__)
 broker_connections = {}
 SUPER_USER = "sashi"
-USER = "sashi"
 # Home route
 # Global control variables
 worker_thread = None
 stop_event = threading.Event()
 
 def background_task():
-    global USER
     print("Monitoring task started")
+    watch_config = get_watch_config()
+    user = watch_config[1]["users"].split(",")[0]
     while not stop_event.is_set():
-        monitor_obj = handle_options(USER)
-        run_user(USER, monitor_obj)
+        monitor_obj = handle_options(user)
+        run_user(user, monitor_obj)
     print("Monitoring task stopped")
 
 def get_credentials():
@@ -36,7 +36,7 @@ def get_broker(user):
         return [False, "Either user or his credentials are missing"]
     #
     kc = KITE_CONNECT(user, credentials.get(user))
-    if kc:
+    if kc.access_token:
         broker_connections[user]= kc
         return [True, "Got Connection successfully"]
     else:
@@ -85,7 +85,9 @@ def get_orders():
     try:
         if user:
             if not user in broker_connections:
-                get_broker(user)
+                connection_status = get_broker(user)
+                if not connection_status[0]:
+                    raise Exception(f"Failed in KITE Connection for user {user}")
             orders[user] = broker_connections[user].fetch_orders()
         else:
             for user in broker_connections:
@@ -105,7 +107,9 @@ def get_positions():
         if user:
             if not user in broker_connections:
                 print(f"Get the broker connection for {user}...")
-                get_broker(user)
+                connection_status = get_broker(user)
+                if not connection_status[0]:
+                    raise Exception(f"Failed in KITE Connection for user {user}")
             positions[user] =  broker_connections[user].fetch_optoin_positions()
         else:
             for user in broker_connections:
@@ -176,7 +180,9 @@ def place_order():
     try:
         if user:
             if not user in broker_connections:
-                get_broker(user)
+                connection_status = get_broker(user)
+                if not connection_status[0]:
+                    raise Exception(f"Failed in KITE Connection for user {user}")
             order_id = broker_connections[user].place_order(symbol=symbol, quantity=quantity, transaction_type=transaction_type, exchange=exchange)
             return [True, f"Order is placed successfully:{order_id}"]
         else:
@@ -232,5 +238,8 @@ def get_watch_log():
 
 # Run the app
 if __name__ == "__main__":
-    get_broker(SUPER_USER)
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    connection_status = get_broker(SUPER_USER)
+    if not connection_status[0]:
+        print(f"Failed in KITE Connection for user {SUPER_USER}")
+    else:
+        app.run(debug=True, host='0.0.0.0', port=5000)
