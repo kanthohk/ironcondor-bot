@@ -14,7 +14,8 @@ OPTIONS_TO_AVOID = [
 "NIFTY26DEC22000PE",
 "NIFTY26DEC23000PE",
 "NIFTY26DEC24000PE",
-"NIFTY26DEC24000CE"
+"NIFTY26DEC24000CE",
+"NIFTY26DEC23000CE"
 ]
 
 def last_weekday_of_month(year, month, weekday):
@@ -59,7 +60,7 @@ class handle_options:
     def __init__(self, user):
         self.user = user
         self.logger = self._setup_logger()
-        self.api_url = "http://localhost:5000"
+        self.api_url = "http://157.10.99.191:5000"
         self.lock_profit = 0
         self.trail_profit_hit_count = 0
         self.positions = []
