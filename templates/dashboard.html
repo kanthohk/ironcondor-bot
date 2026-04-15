@@ -84,7 +84,7 @@
     <div class="row">
         <label>Key</label><input type="text" id="ConfigKey" placeholder="Config key">
         <label>Value</label><input id="ConfigValue" placeholder="Config Value">
-        <label>User</label><input type="text" id="username" placeholder="UserName" value="sashi">
+        <label>User</label><input type="text" id="username" placeholder="UserName" value="sakhi">
     </div>
 
     <div class="button-row">
@@ -112,7 +112,7 @@
 <script>
 function callAPI(param) {
     document.getElementById("responseBox").value = "Firing the API request for " + param + "......."
-    fetch("http://157.10.99.215:5000/" + param, {
+    fetch("http://157.10.99.191:5000/" + param, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"
@@ -144,7 +144,7 @@ function loadConfig() {
 function putConfig() {
     key1 = document.getElementById("ConfigKey").value
     value1 = document.getElementById("ConfigValue").value
-    fetch("http://157.10.99.215:5000/put_watch_config?" + key1 + "=" + value1)
+    fetch("http://157.10.99.191:5000/put_watch_config?" + key1 + "=" + value1)
     .then(response => response.json())
     .then(data => {
         // Show response
@@ -158,7 +158,7 @@ function putConfig() {
 
 function watchLog() {
     user = document.getElementById("username").value
-    fetch("http://157.10.99.215:5000/get_watch_log?user=" + user)
+    fetch("http://157.10.99.191:5000/get_watch_log?user=" + user)
     .then(response => response.json())
     .then(data => {
         // Show response
@@ -174,7 +174,7 @@ function option_chain() {
     index1 = document.getElementById("ConfigKey").value
     expiry1 = document.getElementById("ConfigValue").value
     document.getElementById("responseBox").value = "Fetching the option chain please wait ..."
-    fetch("http://157.10.99.215:5000/get_optionchain/" + index1 + "/" + expiry1)
+    fetch("http://157.10.99.191:5000/get_optionchain/" + index1 + "/" + expiry1)
     .then(response => response.json())
     .then(data => {
         // Show response
